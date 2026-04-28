@@ -18,10 +18,16 @@ By utilizing rigorous system prompt engineering (including Few-Shot Learning, Ch
 
 ## 📸 Screenshots
 
-*(Replace the URL below with a link to your actual screenshot after deploying)*
-
 <div align="center">
-  <img src="https://via.placeholder.com/800x450.png?text=Add+Your+App+Screenshot+Here" alt="Chatbot UI Preview" width="800" style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"/>
+  <table>
+    <tr>
+      <td><img src="./public/screenshot3.jpeg" alt="Anshuman Persona" width="400"/></td>
+      <td><img src="./public/screenshot1.jpeg" alt="Abhimanyu Persona" width="400"/></td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center"><img src="./public/screenshot2.jpeg" alt="Kshitij Persona" width="400"/></td>
+    </tr>
+  </table>
 </div>
 
 ---
@@ -92,7 +98,7 @@ This application is optimized for Vercel.
 4. Under **Environment Variables**, add `GOOGLE_GENERATIVE_AI_API_KEY` with your working Gemini key.
 5. Click **Deploy**.
 
-> **Live Demo:** [Click Here to View Live Project](https://your-vercel-deployment-url-goes-here.vercel.app)
+> **Live Demo:** [Click Here to View Live Project](https://scaler-persona-switcher.vercel.app/)
 
 ---
 
