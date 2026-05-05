@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextRequest, NextResponse } from 'next/server';
 
 const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+const groqApiKey = process.env.GROQ_API_KEY;
 const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 
 // System Prompts Data Store
@@ -94,13 +95,6 @@ Assistant: Well, yes, you *could* do that. You solved it, but not in the way we 
 };
 
 export async function POST(req: NextRequest) {
-  if (!genAI) {
-    return NextResponse.json(
-      { error: 'API key not configured. Please add GOOGLE_GENERATIVE_AI_API_KEY to your environment variables.' },
-      { status: 500 }
-    );
-  }
-
   try {
     const body = await req.json();
     const { persona, message, history } = body;
@@ -114,29 +108,75 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid persona selected.' }, { status: 400 });
     }
 
-    // Prepare model
+    // Try Groq First (Free and reliable alternative)
+    if (groqApiKey) {
+      try {
+        const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${groqApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              ...(history || []).map((h: any) => ({
+                role: h.role === 'model' ? 'assistant' : 'user',
+                content: h.parts?.[0]?.text || '',
+              })).filter((m: any) => m.content),
+              { role: 'user', content: message },
+            ],
+            temperature: 0.7,
+            max_tokens: 2048,
+          }),
+        });
+
+        if (groqResponse.ok) {
+          const data = await groqResponse.json();
+          const responseText = data.choices[0].message.content;
+          const cleanResponseText = responseText.replace(/<thought>[\s\S]*?<\/thought>/gi, '').trim();
+          return NextResponse.json({ reply: cleanResponseText || responseText });
+        } else {
+          const errorData = await groqResponse.json();
+          console.error('Groq API Error Detail:', JSON.stringify(errorData, null, 2));
+          // If it's an authentication error, we should probably tell the user
+          if (groqResponse.status === 401) {
+            return NextResponse.json({ error: 'Invalid Groq API Key. Please check your .env file.' }, { status: 401 });
+          }
+        }
+      } catch (e) {
+        console.error('Groq connection error:', e);
+      }
+    }
+
+    // Fallback to Gemini
+    if (!genAI) {
+      return NextResponse.json(
+        { error: 'No LLM providers available. Please configure GROQ_API_KEY or GOOGLE_GENERATIVE_AI_API_KEY.' },
+        { status: 500 }
+      );
+    }
+
+    // Prepare Gemini model
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       systemInstruction: systemPrompt,
     });
 
-    // We start a chat to maintain history
     const chat = model.startChat({
       history: history || [],
     });
 
     const result = await chat.sendMessage(message);
     const responseText = result.response.text();
-
-    // Sometimes the model might include <thought>...</thought> in the output despite instructions.
-    // Let's strip it out for the final frontend presentation to look cleaner.
     const cleanResponseText = responseText.replace(/<thought>[\s\S]*?<\/thought>/gi, '').trim();
 
     return NextResponse.json({ 
       reply: cleanResponseText || responseText 
     });
   } catch (error: any) {
-    console.error('Gemini API Error:', error);
+    console.error('Chat API Error:', error);
     return NextResponse.json(
       { error: 'Failed to communicate with the AI. Please try again later.' },
       { status: 500 }
