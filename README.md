@@ -4,6 +4,7 @@
   
   [![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
   [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+  [![Groq](https://img.shields.io/badge/Groq-f55036?style=for-the-badge&logo=groq&logoColor=white)](https://groq.com/)
   [![Gemini API](https://img.shields.io/badge/Google_Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
   [![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
 </div>
@@ -12,7 +13,7 @@
 
 Welcome to **Assignment 01**! This application allows users to experience real, context-driven conversations with three prominent Scaler personalities: **Anshuman Singh**, **Abhimanyu Saxena**, and **Kshitij Mishra**. 
 
-By utilizing rigorous system prompt engineering (including Few-Shot Learning, Chain-of-Thought reasoning, and strict behavioral constraints), the Gemini API effortlessly embodies their unique mentoring styles, values, and teaching paradigms.
+By utilizing rigorous system prompt engineering (including Few-Shot Learning, Chain-of-Thought reasoning, and strict behavioral constraints), the platform leverages **Groq (Llama 3.3)** and **Google Gemini** to effortlessly embody their unique mentoring styles, values, and teaching paradigms.
 
 ---
 
@@ -49,7 +50,7 @@ By utilizing rigorous system prompt engineering (including Few-Shot Learning, Ch
 | **Frontend** | React (Next.js 15) | Chosen for its robust App Router architecture and React state management. |
 | **Backend** | Next.js API Routes | Serves as a secure, serverless backend to keep the API key completely hidden. |
 | **Styling** | Vanilla CSS Modules | Adheres strictly to the requirement for raw CSS, achieving premium aesthetics without Tailwind. |
-| **AI Integration** | `@google/generative-ai` | The official Node SDK for connecting to the powerful Gemini `2.5-flash` model. |
+| **AI Integration** | `Groq Cloud` & `@google/generative-ai` | Uses Groq (Llama 3.3 70B) as the primary high-speed engine, with Gemini as a robust fallback. |
 
 ---
 
@@ -59,7 +60,8 @@ Follow these instructions to run the project locally on your machine.
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/en/) (v18 or higher)
-- A valid Google Gemini API Key
+- A valid **Groq API Key** (Recommended for speed/free tier)
+- OR a valid Google Gemini API Key
 
 ### Installation
 
@@ -75,9 +77,10 @@ Follow these instructions to run the project locally on your machine.
    ```
 
 3. **Set up Environment Variables**
-   Rename `.env.example` to `.env.local` (or just `.env`) and add your API key:
+   Rename `.env.example` to `.env` and add your API keys:
    ```env
-   GOOGLE_GENERATIVE_AI_API_KEY=your_actual_api_key_here
+   GROQ_API_KEY=your_groq_api_key_here
+   GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key_here
    ```
 
 4. **Start the Development Server**
@@ -95,7 +98,7 @@ This application is optimized for Vercel.
 1. Push your code to a public GitHub repository.
 2. Log into [Vercel](https://vercel.com/) and click **"Add New Project"**.
 3. Import your newly created repository.
-4. Under **Environment Variables**, add `GOOGLE_GENERATIVE_AI_API_KEY` with your working Gemini key.
+4. Under **Environment Variables**, add `GROQ_API_KEY` (and optionally `GOOGLE_GENERATIVE_AI_API_KEY`).
 5. Click **Deploy**.
 
 > **Live Demo:** [Click Here to View Live Project](https://scaler-persona-switcher.vercel.app/)
